@@ -14,7 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -33,7 +32,6 @@ class DashboardController extends AbstractDashboardController
 
     public function __construct(
         private Packages $assets,
-        private AdminUrlGenerator $adminUrlGenerator,
         private MessageRepository $messageRepository,
         private ProjectRepository $projectRepository,
         private CareerRepository $careerRepository,
