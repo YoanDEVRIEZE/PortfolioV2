@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: AboutRepository::class)]
 class About
 {
@@ -16,20 +17,20 @@ class About
     private ?int $id = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: 'Title should not be blank.')]
-    #[Assert\Length(min: 1, max: 20, minMessage: 'Title must be at least {{ limit }} characters long.', maxMessage: 'Title cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.title.not_blank')]
+    #[Assert\Length(min: 1, max: 20, minMessage: 'validation.title.length_min', maxMessage: 'validation.title.length_max')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, length: 255)]
-    #[Assert\NotBlank(message: 'Description should not be blank.')]
-    #[Assert\Length(min: 10, max: 255, minMessage: 'Description must be at least {{ limit }} characters long.', maxMessage: 'Description cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.description.not_blank')]
+    #[Assert\Length(min: 10, max: 255, minMessage: 'validation.description.length_min', maxMessage: 'validation.description.length_max')]
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updateAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -60,26 +61,28 @@ class About
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): static
     {
-        $this->createAt = $createAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): static
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }

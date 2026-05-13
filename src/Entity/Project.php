@@ -7,8 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
+#[Vich\Uploadable]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
 {
@@ -18,34 +23,38 @@ class Project
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Title should not be blank.')]
-    #[Assert\Length(min: 1, max: 100, minMessage: 'Title must be at least {{ limit }} characters long.', maxMessage: 'Title cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.title.not_blank')]
+    #[Assert\Length(min: 1, max: 100, minMessage: 'validation.title.length_min', maxMessage: 'validation.title.length_max')]
     private ?string $title = null;
 
     #[ORM\Column(length: 150)]
-    #[Assert\NotBlank(message: 'Description should not be blank.')]
-    #[Assert\Length(min: 1, max: 150, minMessage: 'Description must be at least {{ limit }} characters long.', maxMessage: 'Description cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.description.not_blank')]
+    #[Assert\Length(min: 1, max: 150, minMessage: 'validation.description.length_min', maxMessage: 'validation.description.length_max')]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Content should not be blank.')]
-    #[Assert\Length(min: 20, max: 5000, minMessage: 'Content must be at least {{ limit }} characters long.', maxMessage: 'Content cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.content.not_blank')]
+    #[Assert\Length(min: 20, max: 5000, minMessage: 'validation.content.length_min', maxMessage: 'validation.content.length_max')]
     private ?string $content = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $coverpicture = null;
+    #[Ignore]
+    #[Vich\UploadableField(mapping: 'img_project_coverpicture', fileNameProperty: 'coverpicturefilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['image/webp'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.webp_only')]
+    private ?File $coverpicture = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $coverpicturefilename = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $projectpicture = null;
+    #[Ignore]
+    #[Vich\UploadableField(mapping: 'img_project_picture', fileNameProperty: 'projectpicturefilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['image/webp'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.webp_only')]
+    private ?File $projectpicture = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectpicturefilename = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url(requireTld: true, message: "The URL '{{ value }}' is not a valid URL.")]
+    #[Assert\Url(requireTld: true, message: 'validation.url.invalid')]
     private ?string $link = null;
 
     #[ORM\Column]
@@ -106,16 +115,14 @@ class Project
         return $this;
     }
 
-    public function getCoverpicture(): ?string
+    public function getCoverpicture(): ?File
     {
         return $this->coverpicture;
     }
 
-    public function setCoverpicture(string $coverpicture): static
+    public function setCoverpicture(?File $coverpicture = null): void
     {
         $this->coverpicture = $coverpicture;
-
-        return $this;
     }
 
     public function getCoverpicturefilename(): ?string
@@ -130,16 +137,14 @@ class Project
         return $this;
     }
 
-    public function getProjectpicture(): ?string
+    public function getProjectpicture(): ?File
     {
         return $this->projectpicture;
     }
 
-    public function setProjectpicture(string $projectpicture): static
+    public function setProjectpicture(?File $projectpicture = null): void
     {
         $this->projectpicture = $projectpicture;
-
-        return $this;
     }
 
     public function getProjectpicturefilename(): ?string
@@ -171,9 +176,10 @@ class Project
         return $this->createAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    #[ORM\PrePersist]
+    public function setCreateAt(): static
     {
-        $this->createAt = $createAt;
+        $this->createAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -183,9 +189,10 @@ class Project
         return $this->updateAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
+    #[ORM\PreUpdate]
+    public function setUpdateAt(): static
     {
-        $this->updateAt = $updateAt;
+        $this->updateAt = new \DateTimeImmutable();
 
         return $this;
     }

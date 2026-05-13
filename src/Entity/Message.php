@@ -16,28 +16,31 @@ class Message
     private ?int $id = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: 'Lastname should not be blank.')]
-    #[Assert\Length(min: 1, max: 20, minMessage: 'Lastname must be at least {{ limit }} characters long.', maxMessage: 'Lastname cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.lastname.not_blank')]
+    #[Assert\Length(min: 1, max: 20, minMessage: 'validation.lastname.length_min', maxMessage: 'validation.lastname.length_max')]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: 'Firstname should not be blank.')]
-    #[Assert\Length(min: 1, max: 20, minMessage: 'Firstname must be at least {{ limit }} characters long.', maxMessage: 'Firstname cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.firstname.not_blank')]
+    #[Assert\Length(min: 1, max: 20, minMessage: 'validation.firstname.length_min', maxMessage: 'validation.firstname.length_max')]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Email should not be blank.')]
-    #[Assert\Email(message: 'The email "{{ value }}" is not a valid email.')]
-    #[Assert\Length(max: 180, maxMessage: 'Email cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.email.not_blank')]
+    #[Assert\Email(message: 'validation.email.invalid')]
+    #[Assert\Length(max: 180, maxMessage: 'validation.email.length_max')]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Content should not be blank.')]
-    #[Assert\Length(min: 20, max: 5000, minMessage: 'Content must be at least {{ limit }} characters long.', maxMessage: 'Content cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.content.not_blank')]
+    #[Assert\Length(min: 20, max: 5000, minMessage: 'validation.content.length_min', maxMessage: 'validation.content.length_max')]
     private ?string $content = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?bool $isread = null;
 
     public function getId(): ?int
     {
@@ -92,14 +95,26 @@ class Message
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    public function setCreatedAt(\DateTimeImmutable $createAt): static
     {
-        $this->createAt = $createAt;
+        $this->createdAt = $createAt;
+
+        return $this;
+    }
+
+    public function getIsRead(): ?bool
+    {
+        return $this->isread;
+    }
+
+    public function setIsRead(bool $isread): static
+    {
+        $this->isread = $isread;
 
         return $this;
     }

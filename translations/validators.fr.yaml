@@ -1,0 +1,47 @@
+validation:
+  title:
+    not_blank: "Le titre ne doit pas être vide."
+    length_min: "Le titre doit contenir au moins {{ limit }} caractères."
+    length_max: "Le titre ne peut pas dépasser {{ limit }} caractères."
+  description:
+    not_blank: "La description ne doit pas être vide."
+    length_min: "La description doit contenir au moins {{ limit }} caractères."
+    length_max: "La description ne peut pas dépasser {{ limit }} caractères."
+  media_description:
+    not_blank: "La description média ne doit pas être vide."
+    length_min: "La description média doit contenir au moins {{ limit }} caractères."
+    length_max: "La description média ne peut pas dépasser {{ limit }} caractères."
+  content:
+    not_blank: "Le contenu ne doit pas être vide."
+    length_min: "Le contenu doit contenir au moins {{ limit }} caractères."
+    length_max: "Le contenu ne peut pas dépasser {{ limit }} caractères."
+  email:
+    not_blank: "L'adresse e-mail ne doit pas être vide."
+    invalid: "L'adresse e-mail \"{{ value }}\" n'est pas valide."
+    length_max: "L'adresse e-mail ne peut pas dépasser {{ limit }} caractères."
+  password:
+    not_blank: "Le mot de passe ne doit pas être vide."
+    length_min: "Le mot de passe doit contenir au moins {{ limit }} caractères."
+    length_max: "Le mot de passe ne peut pas dépasser {{ limit }} caractères."
+  firstname:
+    not_blank: "Le prénom ne doit pas être vide."
+    length_min: "Le prénom doit contenir au moins {{ limit }} caractères."
+    length_max: "Le prénom ne peut pas dépasser {{ limit }} caractères."
+  lastname:
+    not_blank: "Le nom ne doit pas être vide."
+    length_min: "Le nom doit contenir au moins {{ limit }} caractères."
+    length_max: "Le nom ne peut pas dépasser {{ limit }} caractères."
+  phone:
+    length_exact: "Le numéro de téléphone doit contenir exactement {{ limit }} caractères."
+  level:
+    not_blank: "Le niveau ne doit pas être vide."
+  progress_bar_color:
+    not_blank: "La couleur de la barre de progression ne doit pas être vide."
+  color:
+    hex_format: "La couleur doit être au format HEX (#RRGGBB ou #RGB)."
+  url:
+    invalid: "L'URL \"{{ value }}\" n'est pas valide."
+  file:
+    max_size: "Le fichier ne doit pas dépasser 10 Mo."
+    webp_only: "Le fichier doit être une image au format .webp."
+    pdf_only: "Le fichier doit être un document au format .pdf."

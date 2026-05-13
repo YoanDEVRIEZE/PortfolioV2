@@ -1,0 +1,59 @@
+vich_uploader:
+    db_driver: orm
+
+    mappings:
+        img_user : 
+            uri_prefix: /images/profil
+            upload_destination: '%kernel.project_dir%/public/images/profil'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false 
+            delete_on_update: true
+            delete_on_remove: true
+
+        cv_user:
+            uri_prefix: /uploads
+            upload_destination: '%kernel.project_dir%/public/uploads'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false 
+            delete_on_update: true
+            delete_on_remove: true
+
+        img_skill:
+            uri_prefix: /images/skill
+            upload_destination: '%kernel.project_dir%/public/images/skill'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false 
+            delete_on_update: true
+            delete_on_remove: true
+
+        img_coverpicture:
+            uri_prefix: /images/career/cover
+            upload_destination: '%kernel.project_dir%/public/images/career/cover'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false 
+            delete_on_update: true
+            delete_on_remove: true
+
+        img_jobpicture:
+            uri_prefix: /images/career/job
+            upload_destination: '%kernel.project_dir%/public/images/career/job'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false 
+            delete_on_update: true
+            delete_on_remove: true
+
+        img_project_coverpicture:
+            uri_prefix: /images/project/cover
+            upload_destination: '%kernel.project_dir%/public/images/project/cover'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+
+        img_project_picture:
+            uri_prefix: /images/project/picture
+            upload_destination: '%kernel.project_dir%/public/images/project/picture'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true

@@ -1,0 +1,47 @@
+validation:
+  title:
+    not_blank: "Title should not be blank."
+    length_min: "Title must be at least {{ limit }} characters long."
+    length_max: "Title cannot be longer than {{ limit }} characters."
+  description:
+    not_blank: "Description should not be blank."
+    length_min: "Description must be at least {{ limit }} characters long."
+    length_max: "Description cannot be longer than {{ limit }} characters."
+  media_description:
+    not_blank: "Media description should not be blank."
+    length_min: "Media description must be at least {{ limit }} characters long."
+    length_max: "Media description cannot be longer than {{ limit }} characters."
+  content:
+    not_blank: "Content should not be blank."
+    length_min: "Content must be at least {{ limit }} characters long."
+    length_max: "Content cannot be longer than {{ limit }} characters."
+  email:
+    not_blank: "Email should not be blank."
+    invalid: "The email \"{{ value }}\" is not a valid email."
+    length_max: "Email cannot be longer than {{ limit }} characters."
+  password:
+    not_blank: "Password should not be blank."
+    length_min: "Password must be at least {{ limit }} characters long."
+    length_max: "Password cannot be longer than {{ limit }} characters."
+  firstname:
+    not_blank: "Firstname should not be blank."
+    length_min: "Firstname must be at least {{ limit }} characters long."
+    length_max: "Firstname cannot be longer than {{ limit }} characters."
+  lastname:
+    not_blank: "Lastname should not be blank."
+    length_min: "Lastname must be at least {{ limit }} characters long."
+    length_max: "Lastname cannot be longer than {{ limit }} characters."
+  phone:
+    length_exact: "Phone must be exactly {{ limit }} characters long."
+  level:
+    not_blank: "Level should not be blank."
+  progress_bar_color:
+    not_blank: "Progress bar color should not be blank."
+  color:
+    hex_format: "Color must use HEX format (#RRGGBB or #RGB)."
+  url:
+    invalid: "The URL \"{{ value }}\" is not a valid URL."
+  file:
+    max_size: "The file size must not exceed 10 MB."
+    webp_only: "The file must be a .webp image."
+    pdf_only: "The file must be a .pdf document."

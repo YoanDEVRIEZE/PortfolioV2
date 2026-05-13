@@ -7,8 +7,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[Vich\Uploadable]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -19,9 +24,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Assert\Email(message: 'The email {{ value }} is not a valid email.')]
-    #[Assert\NotBlank(message: 'Email should not be blank.')]
-    #[Assert\Length(max: 180, maxMessage: 'Email cannot be longer than {{ limit }} characters.')]
+    #[Assert\Email(message: 'validation.email.invalid')]
+    #[Assert\NotBlank(message: 'validation.email.not_blank')]
+    #[Assert\Length(max: 180, maxMessage: 'validation.email.length_max')]
     private ?string $email = null;
 
     /**
@@ -34,38 +39,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Password should not be blank.')]
-    #[Assert\Length(min: 6, max: 255, minMessage: 'Password must be at least {{ limit }} characters long.', maxMessage: 'Password cannot be longer than {{ limit }} characters.')]
-    #[Assert\Regex(pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/', message: 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.')]
+    #[Assert\NotBlank(message: 'validation.password.not_blank')]
+    #[Assert\Length(min: 6, max: 255, minMessage: 'validation.password.length_min', maxMessage: 'validation.password.length_max')]
     private ?string $password = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(min: 5, max: 50, minMessage: 'Lastname must be at least {{ limit }} characters long.', maxMessage: 'Lastname cannot be longer than {{ limit }} characters.')]
+    #[Assert\Length(min: 5, max: 50, minMessage: 'validation.lastname.length_min', maxMessage: 'validation.lastname.length_max')]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(min: 2, max: 50, minMessage: 'Firstname must be at least {{ limit }} characters long.', maxMessage: 'Firstname cannot be longer than {{ limit }} characters.')]
+    #[Assert\Length(min: 2, max: 50, minMessage: 'validation.firstname.length_min', maxMessage: 'validation.firstname.length_max')]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    #[Assert\Length(min: 10, max: 10, minMessage: 'Phone must be exactly {{ limit }} characters long.', maxMessage: 'Phone cannot be longer than {{ limit }} characters.')]
+    #[Assert\Length(min: 10, max: 10, minMessage: 'validation.phone.length_exact', maxMessage: 'validation.phone.length_exact')]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url(requireTld: true, message: "The URL '{{ value }}' is not a valid URL.")]
+    #[Assert\Url(requireTld: true, message: 'validation.url.invalid')]
     private ?string $linkgithub = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url(requireTld: true, message: "The URL '{{ value }}' is not a valid URL.")]
+    #[Assert\Url(requireTld: true, message: 'validation.url.invalid')]
     private ?string $linklinkedin = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $cv = null;
+    #[Ignore] 
+    #[Vich\UploadableField(mapping: 'cv_user', fileNameProperty: 'cvfilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['application/pdf'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.pdf_only')]
+    private ?File $cv = null;
+
+    #[Ignore] 
+    #[Vich\UploadableField(mapping: 'img_user', fileNameProperty: 'imgfilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['image/webp'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.webp_only')]
+    private ?File $img = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $img = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $cvfilename = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -75,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updateAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -146,10 +154,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function __serialize(): array
     {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'roles' => $this->roles,
+            'password' => $this->password ? hash('crc32c', $this->password) : null,
+            'lastname' => $this->lastname,
+            'firstname' => $this->firstname,
+            'phone' => $this->phone,
+            'linkgithub' => $this->linkgithub,
+            'linklinkedin' => $this->linklinkedin,
+            'cvfilename' => $this->cvfilename,
+            'imgfilename' => $this->imgfilename,
+            'createdAt' => $this->createdAt,
+            'updateAt' => $this->updatedAt
+        ];
+    }
 
-        return $data;
+    public function __unserialize(array $data): void
+    {
+        $this->id = $data['id'] ?? null;
+        $this->email = $data['email'] ?? null;
+        $this->roles = $data['roles'] ?? null;
+        $this->password = $data['password'] ?? null;
+        $this->lastname = $data['lastname'] ?? null;
+        $this->firstname = $data['firstname'] ?? null;
+        $this->phone = $data['phone'] ?? null;
+        $this->linkgithub = $data['linkgithub'] ?? null;
+        $this->linklinkedin = $data['linklinkedin'] ?? null;
+        $this->cvfilename = $data['cvfilename'] ?? null;
+        $this->imgfilename = $data['imgfilename'] ?? null;
+        $this->createdAt = $data['createdAt'] ?? null;
+        $this->updatedAt = $data['updateAt'] ?? null;
     }
 
     public function getLastname(): ?string
@@ -212,28 +248,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCv(): ?string
+    public function getCv(): ?File
     {
         return $this->cv;
     }
 
-    public function setCv(?string $cv): static
+    public function setCv(?File $cv = null): void
     {
         $this->cv = $cv;
 
-        return $this;
+        if($cv) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
-    public function getImg(): ?string
+    public function getImg(): ?File
     {
         return $this->img;
     }
 
-    public function setImg(?string $img): static
+    public function setImg(?File $img = null): void
     {
         $this->img = $img;
-
-        return $this;
+        
+        if($img) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
     public function getCvfilename(): ?string
@@ -241,7 +281,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->cvfilename;
     }
 
-    public function setCvfilename(string $cvfilename): static
+    public function setCvfilename(?string $cvfilename): static
     {
         $this->cvfilename = $cvfilename;
 
@@ -265,21 +305,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): static
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): static
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }

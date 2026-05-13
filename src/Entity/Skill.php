@@ -7,7 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
+#[Vich\Uploadable]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
 class Skill
 {
@@ -17,31 +22,32 @@ class Skill
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Title should not be blank.')]
-    #[Assert\Length(min: 1, max: 100, minMessage: 'Title must be at least {{ limit }} characters long.', maxMessage: 'Title cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.title.not_blank')]
+    #[Assert\Length(min: 1, max: 100, minMessage: 'validation.title.length_min', maxMessage: 'validation.title.length_max')]
     private ?string $title = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Level should not be blank.')]
-    #[Assert\Range(min: 1, max: 100, minMessage: 'Level must be at least {{ limit }}.', maxMessage: 'Level cannot be greater than {{ limit }}.')]
+    #[Assert\NotBlank(message: 'validation.level.not_blank')]
     private ?int $level = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $image = null;
+    #[Ignore] 
+    #[Vich\UploadableField(mapping: 'img_skill', fileNameProperty: 'imagefilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['image/webp'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.webp_only')]
+    private ?File $image = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagefilename = null;
 
     #[ORM\Column(length: 7)]
-    #[Assert\NotBlank(message: 'Progress bar color should not be blank.')]
-    #[Assert\Regex(pattern: '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', message: 'La couleur doit être au format HEX (#RRGGBB ou #RGB).')]
+    #[Assert\NotBlank(message: 'validation.progress_bar_color.not_blank')]
+    #[Assert\Regex(pattern: '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', message: 'validation.color.hex_format')]
     private ?string $progressbarcolor = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updateAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Career>
@@ -90,16 +96,14 @@ class Skill
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getImage(): ?File
     {
         return $this->image;
     }
 
-    public function setImage(string $image): static
+    public function setImage(File $image): void
     {
         $this->image = $image;
-
-        return $this;
     }
 
     public function getImagefilename(): ?string
@@ -126,26 +130,28 @@ class Skill
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): static
     {
-        $this->createAt = $createAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): static
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }

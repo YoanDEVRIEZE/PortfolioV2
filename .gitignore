@@ -16,3 +16,18 @@
 ###> MacOS ###
 .DS_Store
 ###< MacOS ###
+
+###> Migrations ###
+/migrations/
+###< Migrations ###
+
+###> Uploads ###
+/public/uploads/
+/public/images/profil/*
+!/public/images/profil/default-avatar.webp
+/public/images/skill/
+/public/images/career/cover/
+/public/images/career/job/
+/public/images/project/cover/
+/public/images/project/picture/
+###< Uploads ###

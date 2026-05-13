@@ -6,6 +6,7 @@ use App\Repository\SiteParameterRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: SiteParameterRepository::class)]
 class SiteParameter
 {
@@ -15,32 +16,32 @@ class SiteParameter
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Title should not be blank.')]
-    #[Assert\Length(min: 1, max: 100, minMessage: 'Title must be at least {{ limit }} characters long.', maxMessage: 'Title cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.title.not_blank')]
+    #[Assert\Length(min: 1, max: 100, minMessage: 'validation.title.length_min', maxMessage: 'validation.title.length_max')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Description should not be blank.')]
-    #[Assert\Length(min: 1, max: 255, minMessage: 'Description must be at least {{ limit }} characters long.', maxMessage: 'Description cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.description.not_blank')]
+    #[Assert\Length(min: 1, max: 255, minMessage: 'validation.description.length_min', maxMessage: 'validation.description.length_max')]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
     private ?array $keyword = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Media description should not be blank.')]
-    #[Assert\Length(min: 1, max: 255, minMessage: 'Media description must be at least {{ limit }} characters long.', maxMessage: 'Media description cannot be longer than {{ limit }} characters.')]
+    #[Assert\NotBlank(message: 'validation.media_description.not_blank')]
+    #[Assert\Length(min: 1, max: 255, minMessage: 'validation.media_description.length_min', maxMessage: 'validation.media_description.length_max')]
     private ?string $mediadescription = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url(requireTld: true, message: "The URL '{{ value }}' is not a valid URL.")]
+    #[Assert\Url(requireTld: true, message: 'validation.url.invalid')]
     private ?string $urlsite = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updateAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -107,26 +108,28 @@ class SiteParameter
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    #[ORM\PrePersist]
+    public function setCreateAt(): static
     {
-        $this->createAt = $createAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): static
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }

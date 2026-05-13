@@ -2,12 +2,19 @@
 
 namespace App\Entity;
 
+use App\Enum\CareerStatus;
 use App\Repository\CareerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
+#[Vich\Uploadable]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: CareerRepository::class)]
 class Career
 {
@@ -31,26 +38,30 @@ class Career
     #[ORM\Column(nullable: true)]
     private ?\DateTime $enddate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(enumType: CareerStatus::class)]
+    private ?CareerStatus $status = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $coverpicture = null;
+    #[Ignore] 
+    #[Vich\UploadableField(mapping: 'img_coverpicture', fileNameProperty: 'coverpicturefilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['image/webp'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.webp_only')]
+    private ?File $coverpicture = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $coverpicturefilename = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $jobpicture = null;
+    #[Ignore] 
+    #[Vich\UploadableField(mapping: 'img_jobpicture', fileNameProperty: 'jobpicturefilename')]
+    #[Assert\File(maxSize: '10240k', mimeTypes: ['image/webp'], maxSizeMessage: 'validation.file.max_size', mimeTypesMessage: 'validation.file.webp_only')]
+    private ?File $jobpicture = null;
 
     #[ORM\Column(length: 255)]
     private ?string $jobpicturefilename = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updateAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Skill>
@@ -128,28 +139,26 @@ class Career
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?CareerStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(CareerStatus $status): static
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getCoverpicture(): ?string
+    public function getCoverpicture(): ?File
     {
         return $this->coverpicture;
     }
 
-    public function setCoverpicture(string $coverpicture): static
+    public function setCoverpicture(?File $coverpicture = null): void
     {
         $this->coverpicture = $coverpicture;
-
-        return $this;
     }
 
     public function getCoverpicturefilename(): ?string
@@ -164,16 +173,14 @@ class Career
         return $this;
     }
 
-    public function getJobpicture(): ?string
+    public function getJobpicture(): ?File
     {
         return $this->jobpicture;
     }
 
-    public function setJobpicture(string $jobpicture): static
+    public function setJobpicture(?File $jobpicture = null): void
     {
         $this->jobpicture = $jobpicture;
-
-        return $this;
     }
 
     public function getJobpicturefilename(): ?string
@@ -181,33 +188,35 @@ class Career
         return $this->jobpicturefilename;
     }
 
-    public function setJobpicturefilename(string $jobpicturefilename): static
+    public function setJobpicturefilename(?string $jobpicturefilename): static
     {
         $this->jobpicturefilename = $jobpicturefilename;
 
         return $this;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): static
     {
-        $this->createAt = $createAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdateAt(?\DateTimeImmutable $updateAt): static
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): static
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }

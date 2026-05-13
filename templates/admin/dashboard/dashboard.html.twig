@@ -1,0 +1,86 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block main %}
+    <h1 class="mb-4">{{ 'admin.welcome'|trans }}</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white mb-3" style="background-color:rgb(52, 104, 28);">
+                <div class="card-header">
+                    📩 {{ 'admin.your_messages'|trans }} - <a style="color:#fff" href="{{ path('admin_message_index') }}">{{ 'admin.view'|trans }} ➡️</a>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ messagecount }} {{ messagecount > 1 ? 'admin.message_plural'|trans : 'admin.message'|trans }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white mb-3" style="background-color:rgb(26, 60, 88);">
+                <div class="card-header">
+                    📌 {{ 'admin.your_projects'|trans }} - <a style="color:#fff" href="{{ path('admin_project_index') }}">{{ 'admin.view'|trans }} ➡️</a>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ projectcount }} {{ projectcount > 1 ? 'admin.project_plural'|trans : 'admin.project'|trans }}</h3>
+                    <hr>
+                    {% if projects is not empty %}
+                        <ul style="padding: 0; list-style: none;">
+                            {% for project in projects %}
+                                <li style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>{{ project.description|slice(0, 24) }}{{ project.description|length > 24 ? '…' : '' }}</span>
+                                    <span style="margin-left: 10px; font-weight: bold;">{{ project.title }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <h3 style="color:#fff">{{ 'admin.no_projects'|trans }}.</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white mb-3" style="background-color:rgb(92, 24, 71);">
+                <div class="card-header">
+                    🏢 {{ 'admin.where_i_worked'|trans }}? - <a style="color:#fff" href="{{ path('admin_career_index') }}">{{ 'admin.view'|trans }} ➡️</a>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ careercount }} {{ careercount > 1 ? 'admin.company_plural'|trans : 'admin.company'|trans }}</h3>
+                    <hr>
+                    {% if careers is not empty %}
+                        <ul style="padding: 0; list-style: none;">
+                            {% for career in careers %}
+                                <li style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>
+                                        {% if career.enddate is empty %}
+                                            {{ 'admin.ongoing'|trans }}
+                                        {% else %}
+                                            {{ career.startdate|date('Y') }} - {{ career.enddate|date('Y') }}
+                                        {% endif %}
+                                    </span>
+                                    <span style="margin-left: 10px; font-weight: bold;">{{ career.title }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <h3 style="color:#fff">{{ 'admin.no_careers'|trans }}.</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>  
+        <div class="col-md-3">
+            <div class="card text-white mb-3" style="background-color:rgb(146, 117, 29);">
+                <div class="card-header">
+                    🛠️ {{ 'admin.your_skills'|trans }} - <a style="color:#fff" href="{{ path('admin_skill_index') }}">{{ 'admin.view'|trans }} ➡️</a>
+                </div>
+                <div class="card-body">
+                    {% if skills is not empty %}
+                        {% for skill in skills %}
+                            <img width="41px" src="{{ asset('images/skill/' ~ skill.imagefilename) }}" alt="{{ skill.title }}" title="{{ skill.title }}"/>
+                        {% endfor %}
+                    {% else %}
+                        <h3 style="color:#fff">{{ 'admin.no_skills'|trans }}.</h3>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
